@@ -159,6 +159,12 @@
   font-family: 'SFMono-Regular', ui-monospace, 'SF Mono', Menlo, monospace;
   font-weight: 500;
 }
+.btn__npm {
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  flex: none;
+}
 .btn--ghost:hover {
   color: var(--text);
   border-color: var(--faint);
