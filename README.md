@@ -5,11 +5,13 @@ an accessible, animated number component. Smooth rolling-digit transitions, loca
 formatting, and synchronized groups, built on the same framework-agnostic engine as the official
 React, Vue, and Svelte packages.
 
-- 🎞️ Rolling-digit transitions (Web Animations API)
-- ♿ Accessible (`role="img"` + `aria-label`)
-- 🌍 `Intl.NumberFormat` formatting (cached)
-- 🧩 Group directive for synchronized animations
-- 🅰️ Standalone, `OnPush`, signal-based, zoneless-compatible; Angular 19 → latest
+| | Feature | Details |
+| :-: | --- | --- |
+| 🎞️ | **Rolling-digit transitions** | Powered by the Web Animations API |
+| ♿ | **Accessible** | `role="img"` + `aria-label` |
+| 🌍 | **Locale-aware formatting** | `Intl.NumberFormat`, cached |
+| 🧩 | **Synchronized groups** | Group directive for coordinated animations |
+| 🅰️ | **Modern Angular** | Standalone, `OnPush`, signal-based, zoneless-compatible; Angular 19 → latest |
 
 ## Installation
 
