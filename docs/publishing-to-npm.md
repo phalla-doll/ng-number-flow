@@ -6,10 +6,10 @@ A step-by-step plan for releasing the library to the public npm registry. The pa
 the generated `package.json` with the correct `exports`, `module`, and `typings` fields plus the
 copied `README.md`.
 
-> Status: not yet published. `v0.1.0` exists as a git tag + GitHub release only. The package
-> config is publish-ready — verified with `npm publish --dry-run` (partial compilation mode, ships
-> the FESM bundle + types). Automated publishing is wired up in
-> [`.github/workflows/publish.yml`](../.github/workflows/publish.yml) (see §7).
+> Status: **published** — <https://www.npmjs.com/package/ng-number-flow> (`0.1.0`, `latest`).
+> The package was released via [`.github/workflows/publish.yml`](../.github/workflows/publish.yml)
+> with provenance (see §7). Partial compilation mode is set and the FESM bundle + types ship
+> correctly (verified with `npm publish --dry-run` and a smoke-test install).
 
 ---
 

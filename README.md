@@ -1,11 +1,14 @@
 # ng-number-flow
 
+[![npm version](https://img.shields.io/npm/v/ng-number-flow.svg)](https://www.npmjs.com/package/ng-number-flow)
+[![license](https://img.shields.io/npm/l/ng-number-flow.svg)](./LICENSE)
+
 An Angular (19+ standalone) wrapper around [number-flow](https://github.com/barvian/number-flow) —
 an accessible, animated number component. Smooth rolling-digit transitions, locale-aware
 formatting, and synchronized groups, built on the same framework-agnostic engine as the official
 React, Vue, and Svelte packages.
 
-**[▶ Live demo](https://phalla-doll.github.io/ng-number-flow/)** — interactive examples of every feature.
+**[▶ Live demo](https://phalla-doll.github.io/ng-number-flow/)** &nbsp;·&nbsp; **[📦 npm](https://www.npmjs.com/package/ng-number-flow)**
 
 | Feature | Details |
 | --- | --- |

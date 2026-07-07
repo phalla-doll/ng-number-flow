@@ -1,8 +1,13 @@
 # ng-number-flow
 
+[![npm version](https://img.shields.io/npm/v/ng-number-flow.svg)](https://www.npmjs.com/package/ng-number-flow)
+[![license](https://img.shields.io/npm/l/ng-number-flow.svg)](https://github.com/phalla-doll/ng-number-flow/blob/main/LICENSE)
+
 An Angular (19+ standalone) animated number component. A thin, dependency-light wrapper around
 the framework-agnostic [`number-flow`](https://github.com/barvian/number-flow) web component —
 the same animation/formatting engine used by the official React, Vue, and Svelte packages.
+
+**npm:** [npmjs.com/package/ng-number-flow](https://www.npmjs.com/package/ng-number-flow)
 
 - 🎞️ Smooth rolling-digit transitions (Web Animations API)
 - ♿ Accessible out of the box (`role="img"` + `aria-label`)

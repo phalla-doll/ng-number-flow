@@ -69,7 +69,7 @@ Exports flow through `src/public-api.ts` (and `src/index.ts` re-exports it). Pub
 
 ## Publishing
 
-The library builds to `packages/ng-number-flow/dist` and publishes that directory (`files: ["dist", "README.md"]`, `publishConfig.access: "public"`). See `docs/publishing-to-npm.md` for the full release procedure. The package README (`packages/ng-number-flow/README.md`) is the full API reference; the root README is the overview.
+Published at <https://www.npmjs.com/package/ng-number-flow> (`0.1.0`). The library builds to `packages/ng-number-flow/dist` and publishes that directory as-is (no `files` field — ng-packagr would copy it into `dist/package.json`, where `["dist", ...]` matches nothing and drops the bundle; `publishConfig.access: "public"`). `tsconfig.lib.json` sets `angularCompilerOptions.compilationMode: "partial"` (required — full mode is rejected by the generated `prepublishOnly` guard). Releases run via `.github/workflows/publish.yml` on `v*` tag push, using an `NPM_TOKEN` secret that **must be a Bypass-2FA token** (the account has 2FA disabled). See `docs/publishing-to-npm.md` for the full procedure. The package README (`packages/ng-number-flow/README.md`) is the full API reference; the root README is the overview.
 
 ## Reference material
 
