@@ -367,10 +367,22 @@
   line-height: 1;
 }
 .scoreboard__sep {
-  font-size: 44px;
-  font-weight: 300;
-  color: var(--faint);
-  padding-bottom: 4px;
+  align-self: flex-end;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.22em;
+  height: clamp(52px, 9vw, 72px);
+  margin-bottom: 0.14em;
+  font-size: clamp(52px, 9vw, 72px);
+}
+.scoreboard__sep::before,
+.scoreboard__sep::after {
+  content: '';
+  width: 0.11em;
+  height: 0.11em;
+  border-radius: 50%;
+  background: var(--faint);
 }
 
 /* ---------- Shared controls ---------- */
