@@ -6,7 +6,10 @@ A step-by-step plan for releasing the library to the public npm registry. The pa
 the generated `package.json` with the correct `exports`, `module`, and `typings` fields plus the
 copied `README.md`.
 
-> Status: not yet published. `v0.1.0` exists as a git tag + GitHub release only.
+> Status: not yet published. `v0.1.0` exists as a git tag + GitHub release only. The package
+> config is publish-ready — verified with `npm publish --dry-run` (partial compilation mode, ships
+> the FESM bundle + types). Automated publishing is wired up in
+> [`.github/workflows/publish.yml`](../.github/workflows/publish.yml) (see §7).
 
 ---
 
@@ -123,9 +126,13 @@ npm publish --access public
 
 ---
 
-## 7. Automating with GitHub Actions (optional, recommended later)
+## 7. Automating with GitHub Actions (implemented)
 
-Publish on tag push, with npm **provenance** (supply-chain attestation):
+This is already set up in [`.github/workflows/publish.yml`](../.github/workflows/publish.yml): it
+publishes on tag push (`v*`) with npm **provenance** (supply-chain attestation). To enable it, add
+an npm **automation** access token as the `NPM_TOKEN` repository secret
+(`gh secret set NPM_TOKEN`). After that, releasing is: bump version → tag → push. The reference
+implementation:
 
 ```yaml
 # .github/workflows/publish.yml
