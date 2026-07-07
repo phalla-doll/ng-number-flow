@@ -1,7 +1,7 @@
 {
 	"name": "ng-number-flow",
 	"version": "0.1.0",
-	"description": "An Angular (17+) standalone animated number component. A thin wrapper around number-flow.",
+	"description": "An Angular (19+) standalone animated number component. A thin wrapper around number-flow.",
 	"license": "MIT",
 	"author": "phalla-doll",
 	"homepage": "https://github.com/phalla-doll/ng-number-flow",
@@ -37,7 +37,7 @@
 		"typecheck": "tsc -p tsconfig.lib.json --noEmit"
 	},
 	"peerDependencies": {
-		"@angular/core": ">=17.0.0"
+		"@angular/core": ">=19.0.0"
 	},
 	"dependencies": {
 		"number-flow": "^0.6.1",

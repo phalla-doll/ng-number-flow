@@ -161,7 +161,7 @@ is just: bump version → tag → push.
 
 ## Notes
 
-- **Peer dependency:** consumers must have `@angular/core >=17`. It is intentionally *not* bundled.
+- **Peer dependency:** consumers must have `@angular/core >=19`. It is intentionally *not* bundled.
 - **Runtime dependency:** `number-flow` (and `tslib`) ship as dependencies and install
   automatically; `ng-package.json` lists `number-flow` under `allowedNonPeerDependencies`.
 - **Why publish from `dist/`:** the source `package.json` lacks the `exports`/`module`/`typings`

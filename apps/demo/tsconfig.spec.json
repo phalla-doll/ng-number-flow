@@ -4,7 +4,14 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals"],
+    "paths": {
+      "ng-number-flow": ["../../packages/ng-number-flow/src/public-api.ts"]
+    }
   },
-  "include": ["src/**/*.d.ts", "src/**/*.spec.ts"]
+  "include": [
+    "src/**/*.d.ts",
+    "src/**/*.spec.ts",
+    "../../packages/ng-number-flow/src/**/*.ts"
+  ]
 }

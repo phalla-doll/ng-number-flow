@@ -1,6 +1,6 @@
 # ng-number-flow — Feasibility & Implementation Plan
 
-An investigation into building an **Angular (17+ standalone)** wrapper for
+An investigation into building an **Angular standalone** wrapper for
 [`number-flow`](https://github.com/barvian/number-flow), the accessible animated number
 component.
 
@@ -197,8 +197,9 @@ added. Low risk.
 
 1. **Hydration spike** when SSR is needed (see §4 #8 / SSR note).
 2. **Playwright visual tests** mirroring the other wrappers' `test/apps` setup.
-3. **Signal-input API vs decorator `@Input()`**: skeleton uses signal `input()` (17.1+).
-   If 17.0 support is required, add decorator-based aliases.
+3. **Decorator `@Input()` fallback for Angular 17/18**: the as-built component uses signal
+   `input()` + `afterRenderEffect`, which sets the floor at Angular 19. If 17/18 support is
+   ever required, swap `afterRenderEffect` for a guarded `effect()` and the peer dep back to `>=17`.
 4. **Tree-shaking of `renderInnerHTML`**: ensure the SSR code path isn't pulled into CSR
    bundles (dynamic import behind `isPlatformBrowser`).
 
@@ -230,15 +231,19 @@ template:
 Why: a component selector and a registered custom-element name **cannot be the same string**
 without Angular/browser selector collisions. Wrapping (`<number-flow-ng>` inside) with the
 host set to `display: contents` mirrors the react/vue wrapper pattern and keeps the host
-transparent to layout. `@ViewChild('flow', { static: true })` makes the element available in
-`ngOnInit`.
+transparent to layout. `viewChild.required('flow')` exposes the element, which the render hooks
+read after the view is created.
 
-### 7.2 Classic decorator API, not signal inputs
+### 7.2 Signal API (as built)
 
-For broad **Angular 17.0+** compatibility the component uses classic `@Input()` / `@Output()`
-/ `ngOnChanges` / `ngOnInit` rather than signal `input()` (17.1+). The property-ordering
+The component uses signal `input()` / `output()` / `viewChild.required()`. One-time setup
+(event listeners + group registration, with `DestroyRef` cleanup) runs in `afterNextRender`;
+an `afterRenderEffect` reactively syncs the inputs onto the element. The property-ordering
 invariant is enforced in `applyProps()` (all props) followed by `applyData()` (`el.data`
-last) — called from both `ngOnInit` and `ngOnChanges`.
+last), both called from the effect's `write` phase. `afterRenderEffect` (Angular 19+) and its
+client-only render hooks replace the earlier `isPlatformBrowser` guards, so the peer dep is
+`>=19`. (The original skeleton used classic `@Input()`/`ngOnChanges` for 17.0+ reach; see
+follow-up §6 #3 for the decorator/`effect()` fallback if 17/18 support is needed again.)
 
 ### 7.3 Default export gotcha (caused TS2614)
 
@@ -263,15 +268,15 @@ grouped. `changeDetection` is **not** valid on `@Directive` metadata — only `@
 ### 7.5 Events attached directly
 
 `animationsstart` / `animationsfinish` do **not** bubble, so they are bound with
-`addEventListener` on the inner element (in `attachListeners`) rather than via template event
-bindings on the host.
+`addEventListener` on the inner element (in the `afterNextRender` setup, torn down via
+`DestroyRef.onDestroy`) rather than via template event bindings on the host.
 
 ### 7.6 Build & tooling realities
 
-- Built with **Angular 22** tooling on **Node 26**; source stays API-compatible with 17+.
+- Built with **Angular 22** tooling on **Node 26**; requires Angular 19+ (`afterRenderEffect`).
 - The library builds via **ng-packagr** → `packages/ng-number-flow/dist` (fesm2022 + types).
   `ng-package.json` lists `allowedNonPeerDependencies: ["number-flow"]`; `@angular/core` is a
-  peer dep `>=17`.
+  peer dep `>=19`.
 - The demo app is **zoneless** (no zone.js; Angular 22 default) — signal/CD updates drive
   rendering, confirming the wrapper works without zone.js.
 - The demo imports the library **from source** via a tsconfig `paths` mapping
