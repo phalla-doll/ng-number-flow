@@ -1,19 +1,16 @@
 import {
+	afterNextRender,
+	afterRenderEffect,
 	ChangeDetectionStrategy,
 	Component,
 	CUSTOM_ELEMENTS_SCHEMA,
+	DestroyRef,
 	ElementRef,
-	EventEmitter,
-	Input,
-	OnChanges,
-	OnDestroy,
-	OnInit,
-	Output,
-	ViewChild,
 	inject,
-	PLATFORM_ID
+	input,
+	output,
+	viewChild
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
 import NumberFlowLite, {
 	formatToData,
 	type Digits,
@@ -23,10 +20,8 @@ import NumberFlowLite, {
 } from 'number-flow/lite';
 import type { Plugin } from 'number-flow/plugins';
 import { getFormatter } from './formatter-cache';
-import { NUMBER_FLOW_GROUP, type NumberFlowGroupCoordinator } from './number-flow.tokens';
+import { NUMBER_FLOW_GROUP } from './number-flow.tokens';
 import './number-flow.element';
-
-const ELEMENT_NAME = 'number-flow-ng';
 
 @Component({
 	selector: 'number-flow',
@@ -36,103 +31,93 @@ const ELEMENT_NAME = 'number-flow-ng';
 	template: `<number-flow-ng #flow></number-flow-ng>`,
 	host: { style: 'display: contents' }
 })
-export class NumberFlowComponent implements OnInit, OnChanges, OnDestroy {
-	@ViewChild('flow', { static: true })
-	private flowRef!: ElementRef<NumberFlowLite>;
+export class NumberFlowComponent {
+	private readonly flowRef = viewChild.required<ElementRef<NumberFlowLite>>('flow');
 
-	@Input() value?: Value;
-	@Input() locales?: Intl.LocalesArgument;
-	@Input() format?: Format;
-	@Input() prefix?: string;
-	@Input() suffix?: string;
-	@Input() animated?: boolean;
-	@Input() respectMotionPreference?: boolean;
-	@Input() transformTiming?: EffectTiming;
-	@Input() spinTiming?: EffectTiming;
-	@Input() opacityTiming?: EffectTiming;
-	@Input() trend?: Trend;
-	@Input() plugins?: Plugin[];
-	@Input() digits?: Digits;
-	@Input() isolate = false;
-	@Input() willChange = false;
-	@Input() nonce?: string;
+	readonly value = input<Value>();
+	readonly locales = input<Intl.LocalesArgument>();
+	readonly format = input<Format>();
+	readonly prefix = input<string>();
+	readonly suffix = input<string>();
+	readonly animated = input<boolean>();
+	readonly respectMotionPreference = input<boolean>();
+	readonly transformTiming = input<EffectTiming>();
+	readonly spinTiming = input<EffectTiming>();
+	readonly opacityTiming = input<EffectTiming>();
+	readonly trend = input<Trend>();
+	readonly plugins = input<Plugin[]>();
+	readonly digits = input<Digits>();
+	readonly isolate = input(false);
+	readonly willChange = input(false);
+	readonly nonce = input<string>();
 
-	@Output() animationsStart = new EventEmitter<void>();
-	@Output() animationsFinish = new EventEmitter<void>();
+	readonly animationsStart = output<void>();
+	readonly animationsFinish = output<void>();
 
-	private readonly platformId = inject(PLATFORM_ID);
-	private readonly isBrowser = isPlatformBrowser(this.platformId);
 	private readonly group = inject(NUMBER_FLOW_GROUP, { optional: true });
+	private readonly destroyRef = inject(DestroyRef);
 
-	private initialized = false;
-	private listenersAttached = false;
-	private unregister?: () => void;
+	constructor() {
+		// One-time setup: wire events and register with the group. `afterNextRender`
+		// runs on the client only (never during SSR) and after the view exists, so the
+		// view child is guaranteed resolved.
+		afterNextRender(() => {
+			const el = this.flowRef().nativeElement;
 
-	ngOnInit(): void {
-		const el = this.el();
-		if (!el || !this.isBrowser) return;
+			const onStart = () => this.animationsStart.emit();
+			const onFinish = () => this.animationsFinish.emit();
+			el.addEventListener('animationsstart', onStart);
+			el.addEventListener('animationsfinish', onFinish);
 
-		this.attachListeners(el);
+			const unregister = this.group?.register(el);
 
-		if (this.group) {
-			this.unregister = this.group.register(el);
-		}
+			this.destroyRef.onDestroy(() => {
+				el.removeEventListener('animationsstart', onStart);
+				el.removeEventListener('animationsfinish', onFinish);
+				unregister?.();
+			});
+		});
 
-		this.applyProps(el);
-		this.applyData(el);
-		this.initialized = true;
-	}
-
-	ngOnChanges(): void {
-		if (!this.initialized) return;
-		const el = this.el();
-		if (!el || !this.isBrowser) return;
-		this.applyProps(el);
-		this.applyData(el);
-	}
-
-	ngOnDestroy(): void {
-		this.unregister?.();
-	}
-
-	private el(): NumberFlowLite | undefined {
-		return this.flowRef?.nativeElement as NumberFlowLite | undefined;
-	}
-
-	private attachListeners(el: NumberFlowLite): void {
-		if (this.listenersAttached) return;
-		this.listenersAttached = true;
-		el.addEventListener('animationsstart', () => this.animationsStart.emit());
-		el.addEventListener('animationsfinish', () => this.animationsFinish.emit());
+		// Reactive sync: push the current inputs onto the custom element whenever any of
+		// them change. Custom-element property assignment is DOM work, so it belongs in
+		// `afterRenderEffect` (client-only) rather than a plain `effect`.
+		afterRenderEffect({
+			write: () => {
+				const el = this.flowRef().nativeElement;
+				this.applyProps(el);
+				this.applyData(el);
+			}
+		});
 	}
 
 	private applyProps(el: NumberFlowLite): void {
 		const d = NumberFlowLite.defaultProps;
-		el.animated = this.animated ?? d.animated;
-		el.respectMotionPreference = this.respectMotionPreference ?? d.respectMotionPreference;
-		el.transformTiming = this.transformTiming ?? d.transformTiming;
-		el.spinTiming = this.spinTiming ?? d.spinTiming;
-		el.opacityTiming = this.opacityTiming ?? d.opacityTiming;
-		el.trend = this.trend ?? d.trend;
-		el.plugins = this.plugins ?? d.plugins;
-		el.digits = this.digits ?? d.digits;
-		el.batched = !!this.group && !this.isolate;
+		el.animated = this.animated() ?? d.animated;
+		el.respectMotionPreference = this.respectMotionPreference() ?? d.respectMotionPreference;
+		el.transformTiming = this.transformTiming() ?? d.transformTiming;
+		el.spinTiming = this.spinTiming() ?? d.spinTiming;
+		el.opacityTiming = this.opacityTiming() ?? d.opacityTiming;
+		el.trend = this.trend() ?? d.trend;
+		el.plugins = this.plugins() ?? d.plugins;
+		el.digits = this.digits() ?? d.digits;
+		el.batched = !!this.group && !this.isolate();
 
-		if (this.willChange) el.setAttribute('data-will-change', '');
+		if (this.willChange()) el.setAttribute('data-will-change', '');
 		else el.removeAttribute('data-will-change');
 	}
 
 	private applyData(el: NumberFlowLite): void {
-		if (this.value == null) return;
+		const value = this.value();
+		if (value == null) return;
 
 		const data = formatToData(
-			this.value,
-			getFormatter(this.locales, this.format),
-			this.prefix,
-			this.suffix
+			value,
+			getFormatter(this.locales(), this.format()),
+			this.prefix(),
+			this.suffix()
 		);
 
-		if (this.group && !this.isolate) {
+		if (this.group && !this.isolate()) {
 			this.group.beginUpdate();
 			el.data = data;
 			this.group.endUpdate();

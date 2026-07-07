@@ -1,6 +1,6 @@
 # ng-number-flow
 
-An Angular (17+ standalone) animated number component. A thin, dependency-light wrapper around
+An Angular (19+ standalone) animated number component. A thin, dependency-light wrapper around
 the framework-agnostic [`number-flow`](https://github.com/barvian/number-flow) web component —
 the same animation/formatting engine used by the official React, Vue, and Svelte packages.
 
@@ -8,7 +8,7 @@ the same animation/formatting engine used by the official React, Vue, and Svelte
 - ♿ Accessible out of the box (`role="img"` + `aria-label`)
 - 🌍 Locale-aware formatting via `Intl.NumberFormat`
 - 🧩 Group directive to synchronize animations across multiple numbers
-- 🅰️ Standalone, `OnPush`, zoneless-compatible; works with Angular 17 → latest
+- 🅰️ Standalone, `OnPush`, signal-based, zoneless-compatible; works with Angular 19 → latest
 
 ## Installation
 
@@ -156,19 +156,21 @@ all descendant `number-flow` components. No inputs.
 
 The component renders an internal custom element (`<number-flow-ng>`, registered once via
 `number-flow`'s `define()`) inside a host with `display: contents`, mirroring the React/Vue
-wrapper pattern. On each change it sets every element property first and assigns `data` **last**
-(the engine's required ordering), computing `data` with the core `formatToData` helper.
+wrapper pattern. Inputs are signal `input()`s; an `afterRenderEffect` syncs them onto the element
+whenever they change, setting every property first and assigning `data` **last** (the engine's
+required ordering), computing `data` with the core `formatToData` helper.
 
 ## SSR
 
 This release is **client-side only**. On the server the component renders nothing and initializes
-in the browser (guarded by `isPlatformBrowser`). Declarative-Shadow-DOM hydration is a planned
-follow-up.
+in the browser — its render hooks (`afterNextRender` / `afterRenderEffect`) run on the client only.
+Declarative-Shadow-DOM hydration is a planned follow-up.
 
 ## Compatibility
 
-- **Angular:** peer dependency `>=17.0.0` (standalone APIs). Built and tested with the latest
-  Angular tooling; source stays 17-compatible.
+- **Angular:** peer dependency `>=19.0.0`. Uses signal `input()` / `output()` / `viewChild()` and
+  `afterRenderEffect` (the last of which requires Angular 19+). Built and tested with the latest
+  Angular tooling.
 - **Zone / zoneless:** works with both. Uses `OnPush` and native element events.
 
 ## License

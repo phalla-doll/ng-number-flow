@@ -1,6 +1,6 @@
 # ng-number-flow
 
-An Angular (17+ standalone) wrapper around [number-flow](https://github.com/barvian/number-flow) —
+An Angular (19+ standalone) wrapper around [number-flow](https://github.com/barvian/number-flow) —
 an accessible, animated number component. Smooth rolling-digit transitions, locale-aware
 formatting, and synchronized groups, built on the same framework-agnostic engine as the official
 React, Vue, and Svelte packages.
@@ -9,7 +9,7 @@ React, Vue, and Svelte packages.
 - ♿ Accessible (`role="img"` + `aria-label`)
 - 🌍 `Intl.NumberFormat` formatting (cached)
 - 🧩 Group directive for synchronized animations
-- 🅰️ Standalone, `OnPush`, zoneless-compatible; Angular 17 → latest
+- 🅰️ Standalone, `OnPush`, signal-based, zoneless-compatible; Angular 19 → latest
 
 ## Installation
 
