@@ -5,6 +5,8 @@ an accessible, animated number component. Smooth rolling-digit transitions, loca
 formatting, and synchronized groups, built on the same framework-agnostic engine as the official
 React, Vue, and Svelte packages.
 
+**[▶ Live demo](https://phalla-doll.github.io/ng-number-flow/)** — interactive examples of every feature.
+
 | Feature | Details |
 | --- | --- |
 | **Rolling-digit transitions** | Powered by the Web Animations API |

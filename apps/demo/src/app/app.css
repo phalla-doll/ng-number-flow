@@ -1,0 +1,439 @@
+:host {
+  --bg: #fcfcfc;
+  --surface: #ffffff;
+  --text: #09090b;
+  --muted: #71717a;
+  --faint: #a1a1aa;
+  --border: #ececef;
+  --border-strong: #e0e0e4;
+  --accent: #18181b;
+  --up: #16a34a;
+  --down: #dc2626;
+  --shadow: 0 1px 2px rgba(9, 9, 11, 0.04), 0 8px 24px rgba(9, 9, 11, 0.04);
+  --radius: 16px;
+
+  display: block;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    ui-rounded, 'SF Pro Rounded', 'Nunito', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --bg: #09090b;
+    --surface: #131316;
+    --text: #fafafa;
+    --muted: #a1a1aa;
+    --faint: #71717a;
+    --border: #26262b;
+    --border-strong: #333338;
+    --accent: #fafafa;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.page {
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px 96px;
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  text-align: center;
+  padding: 88px 0 64px;
+}
+
+.hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: -0.01em;
+}
+
+.hero__mark {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+}
+.hero__mark svg {
+  width: 100%;
+  height: 100%;
+}
+
+.hero__title {
+  margin: 20px 0 0;
+  font-size: clamp(48px, 9vw, 76px);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.hero__subtitle {
+  margin: 20px auto 0;
+  max-width: 460px;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.hero__subtitle code,
+.example__head code {
+  font-family: 'SFMono-Regular', ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 0.88em;
+  padding: 1px 5px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--muted) 12%, transparent);
+  color: var(--text);
+}
+
+.hero__actions {
+  margin-top: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    transform 0.15s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+  white-space: nowrap;
+}
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn--primary {
+  background: var(--accent);
+  color: var(--surface);
+}
+.btn--primary:hover {
+  background: color-mix(in srgb, var(--accent) 88%, var(--muted));
+}
+
+.btn--ghost {
+  color: var(--muted);
+  border: 1px solid var(--border-strong);
+  font-family: 'SFMono-Regular', ui-monospace, 'SF Mono', Menlo, monospace;
+  font-weight: 500;
+}
+.btn--ghost:hover {
+  color: var(--text);
+  border-color: var(--faint);
+}
+
+/* ---------- Layout ---------- */
+.layout {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.sidebar {
+  position: sticky;
+  top: 32px;
+}
+.sidebar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sidebar a {
+  display: block;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--faint);
+  text-decoration: none;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+.sidebar a:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--muted) 8%, transparent);
+}
+.sidebar a.is-active {
+  color: var(--text);
+  font-weight: 600;
+  background: color-mix(in srgb, var(--muted) 10%, transparent);
+}
+
+/* ---------- Examples ---------- */
+.examples {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  min-width: 0;
+}
+
+.example {
+  scroll-margin-top: 32px;
+}
+
+.example__head h2 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.example__head p {
+  margin: 6px 0 16px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--muted);
+  max-width: 52ch;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+  padding: 40px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* ---------- Stepper (Input) ---------- */
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+}
+.stepper__btn {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.stepper__btn:hover {
+  background: color-mix(in srgb, var(--muted) 12%, transparent);
+}
+.stepper__btn:active {
+  background: color-mix(in srgb, var(--muted) 20%, transparent);
+}
+.stepper__value {
+  min-width: 72px;
+  text-align: center;
+  font-size: 34px;
+  font-weight: 700;
+}
+
+/* ---------- Stat (Activity / Currency / Countdown) ---------- */
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+.stat--center {
+  gap: 20px;
+}
+.stat__label {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+}
+.stat__value {
+  font-size: clamp(48px, 8vw, 64px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.stat__value--mono {
+  font-variant-numeric: tabular-nums;
+}
+.stat__delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+.stat__delta--up {
+  color: var(--up);
+  background: color-mix(in srgb, var(--up) 12%, transparent);
+}
+.stat__delta--down {
+  color: var(--down);
+  background: color-mix(in srgb, var(--down) 12%, transparent);
+}
+.stat__arrow {
+  font-size: 13px;
+}
+
+/* ---------- Scoreboard ---------- */
+.scoreboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+.scoreboard__row {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+}
+.team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.team__name {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+}
+.scoreboard__value {
+  font-size: clamp(52px, 9vw, 72px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.scoreboard__sep {
+  font-size: 44px;
+  font-weight: 300;
+  color: var(--faint);
+  padding-bottom: 4px;
+}
+
+/* ---------- Shared controls ---------- */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+.pill {
+  padding: 9px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--surface);
+  background: var(--accent);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    background 0.2s ease;
+}
+.pill:hover {
+  background: color-mix(in srgb, var(--accent) 88%, var(--muted));
+}
+.pill:active {
+  transform: translateY(1px);
+}
+.pill--muted {
+  color: var(--muted);
+  background: transparent;
+  border-color: var(--border-strong);
+}
+.pill--muted:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--muted) 8%, transparent);
+}
+
+/* ---------- Footer ---------- */
+.footer {
+  margin-top: 72px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--faint);
+}
+.footer a {
+  color: var(--muted);
+  text-decoration: none;
+}
+.footer a:hover {
+  color: var(--text);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 720px) {
+  .hero {
+    padding: 56px 0 44px;
+  }
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .sidebar {
+    position: static;
+    top: auto;
+    margin: 0 -8px;
+    overflow-x: auto;
+  }
+  .sidebar ul {
+    flex-direction: row;
+    gap: 4px;
+    padding: 0 8px;
+  }
+  .sidebar a {
+    white-space: nowrap;
+  }
+  .card {
+    min-height: 220px;
+    padding: 32px 16px;
+  }
+}

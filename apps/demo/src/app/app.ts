@@ -1,149 +1,123 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  signal,
+} from '@angular/core';
 import { NumberFlowComponent, NumberFlowGroupDirective } from 'ng-number-flow';
 
+interface ExampleLink {
+  readonly id: string;
+  readonly label: string;
+}
+
 @Component({
-	selector: 'app-root',
-	standalone: true,
-	imports: [NumberFlowComponent, NumberFlowGroupDirective],
-	template: `
-		<main>
-			<h1>ng-number-flow</h1>
-
-			<section>
-				<h2>Auto counter</h2>
-				<number-flow class="big" [value]="count()" />
-			</section>
-
-			<section>
-				<h2>Currency + prefix/suffix</h2>
-				<number-flow
-					class="big"
-					[value]="price()"
-					prefix="$"
-					[format]="{ minimumFractionDigits: 2, maximumFractionDigits: 2 }"
-					suffix=" USD"
-				/>
-			</section>
-
-			<section>
-				<h2>Grouped (synchronized)</h2>
-				<div numberFlowGroup class="group">
-					<number-flow [value]="a()" />
-					<span class="sep">/</span>
-					<number-flow [value]="b()" />
-				</div>
-			</section>
-
-			<section>
-				<h2>Manual</h2>
-				<number-flow class="big" [value]="manual()" />
-				<div class="controls">
-					<button type="button" (click)="dec()">-10</button>
-					<button type="button" (click)="inc()">+10</button>
-					<button type="button" (click)="random()">random</button>
-				</div>
-			</section>
-		</main>
-	`,
-	styles: [
-		`
-			:host {
-				display: block;
-				font-family:
-					'Nunito',
-					system-ui,
-					-apple-system,
-					sans-serif;
-				color: #eee;
-				background: #0b1020;
-				min-height: 100vh;
-			}
-			main {
-				max-width: 720px;
-				margin: 0 auto;
-				padding: 2.5rem 1.5rem;
-			}
-			h1 {
-				font-size: 1.5rem;
-				margin: 0 0 1.5rem;
-			}
-			h2 {
-				font-size: 0.8rem;
-				text-transform: uppercase;
-				letter-spacing: 0.08em;
-				color: #8b93a7;
-				margin: 2rem 0 0.5rem;
-				font-weight: 600;
-			}
-			section {
-				border-top: 1px solid #1e2436;
-				padding-top: 0.25rem;
-			}
-			.big {
-				font-size: 3.5rem;
-				font-weight: 800;
-				font-variant-numeric: tabular-nums;
-			}
-			.group {
-				display: flex;
-				align-items: baseline;
-				gap: 0.25rem;
-				font-size: 3rem;
-				font-weight: 800;
-				font-variant-numeric: tabular-nums;
-			}
-			.sep {
-				opacity: 0.4;
-			}
-			.controls {
-				margin-top: 1rem;
-				display: flex;
-				gap: 0.5rem;
-			}
-			button {
-				background: #1e2436;
-				color: #eee;
-				border: 1px solid #2c3550;
-				padding: 0.5rem 0.9rem;
-				border-radius: 8px;
-				cursor: pointer;
-				font-size: 0.95rem;
-			}
-			button:hover {
-				background: #283154;
-			}
-		`,
-	],
+  selector: 'app-root',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NumberFlowComponent, NumberFlowGroupDirective],
+  templateUrl: './app.html',
+  styleUrl: './app.css',
 })
-export class App implements OnInit, OnDestroy {
-	protected readonly count = signal(0);
-	protected readonly price = signal(12.34);
-	protected readonly a = signal(120);
-	protected readonly b = signal(480);
-	protected readonly manual = signal(500);
+export class App {
+  private readonly destroyRef = inject(DestroyRef);
 
-	private intervalId?: ReturnType<typeof setInterval>;
+  protected readonly examples: readonly ExampleLink[] = [
+    { id: 'input', label: 'Input' },
+    { id: 'activity', label: 'Activity' },
+    { id: 'currency', label: 'Currency' },
+    { id: 'countdown', label: 'Countdown' },
+    { id: 'scoreboard', label: 'Scoreboard' },
+  ];
 
-	ngOnInit(): void {
-		this.intervalId = setInterval(() => {
-			this.count.update((v) => v + 1);
-			this.price.update((v) => +(v + 0.37).toFixed(2));
-			this.a.update((v) => v + Math.floor(Math.random() * 3) - 1);
-			this.b.update((v) => v + Math.floor(Math.random() * 5) - 2);
-		}, 1500);
-	}
+  /** Which section is currently in view — drives the sidebar highlight. */
+  protected readonly activeId = signal<string>(this.examples[0].id);
 
-	ngOnDestroy(): void {
-		if (this.intervalId) clearInterval(this.intervalId);
-	}
+  // Input — a plain, user-driven counter.
+  protected readonly count = signal(0);
 
-	protected inc(): void {
-		this.manual.update((v) => v + 10);
-	}
-	protected dec(): void {
-		this.manual.update((v) => v - 10);
-	}
-	protected random(): void {
-		this.manual.set(Math.floor(Math.random() * 10000));
-	}
+  // Activity — a live metric that random-walks up and down so the trend shows.
+  protected readonly activeUsers = signal(1284);
+  protected readonly usersDelta = signal(0);
+
+  // Currency — a running total the visitor can add to or refund.
+  protected readonly balance = signal(1499.99);
+
+  // Countdown — ticks down to zero, then loops.
+  protected readonly countdown = signal(90);
+
+  // Scoreboard — two values inside a synchronized group.
+  protected readonly home = signal(2);
+  protected readonly away = signal(1);
+
+  constructor() {
+    // Intervals and observers are DOM/browser concerns, so wire them in an
+    // `afterNextRender` (client-only, zoneless-safe) and tear them down via
+    // `DestroyRef` — no `ngOnInit`/`ngOnDestroy` needed.
+    afterNextRender(() => {
+      this.startLiveTicker();
+      this.observeSections();
+    });
+  }
+
+  protected inc(): void {
+    this.count.update((v) => v + 1);
+  }
+
+  protected dec(): void {
+    this.count.update((v) => v - 1);
+  }
+
+  protected addFunds(): void {
+    this.balance.update((v) => +(v + 19.99).toFixed(2));
+  }
+
+  protected refund(): void {
+    this.balance.update((v) => +Math.max(0, v - 49.5).toFixed(2));
+  }
+
+  protected scoreHome(): void {
+    this.home.update((v) => v + 1);
+  }
+
+  protected scoreAway(): void {
+    this.away.update((v) => v + 1);
+  }
+
+  protected resetScore(): void {
+    this.home.set(0);
+    this.away.set(0);
+  }
+
+  private startLiveTicker(): void {
+    const id = setInterval(() => {
+      const step = Math.floor(Math.random() * 61) - 24;
+      this.usersDelta.set(step);
+      this.activeUsers.update((v) => Math.max(0, v + step));
+      this.countdown.update((v) => (v <= 0 ? 90 : v - 1));
+    }, 1600);
+    this.destroyRef.onDestroy(() => clearInterval(id));
+  }
+
+  private observeSections(): void {
+    if (typeof IntersectionObserver === 'undefined') return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) this.activeId.set(entry.target.id);
+        }
+      },
+      { rootMargin: '-45% 0px -50% 0px', threshold: 0 },
+    );
+
+    for (const { id } of this.examples) {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    }
+
+    this.destroyRef.onDestroy(() => observer.disconnect());
+  }
 }
