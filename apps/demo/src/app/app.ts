@@ -50,6 +50,7 @@ import { NumberFlowComponent, NumberFlowGroupDirective } from 'ng-number-flow';
 			:host {
 				display: block;
 				font-family:
+					'Nunito',
 					system-ui,
 					-apple-system,
 					sans-serif;
@@ -80,7 +81,7 @@ import { NumberFlowComponent, NumberFlowGroupDirective } from 'ng-number-flow';
 			}
 			.big {
 				font-size: 3.5rem;
-				font-weight: 700;
+				font-weight: 800;
 				font-variant-numeric: tabular-nums;
 			}
 			.group {
@@ -88,7 +89,7 @@ import { NumberFlowComponent, NumberFlowGroupDirective } from 'ng-number-flow';
 				align-items: baseline;
 				gap: 0.25rem;
 				font-size: 3rem;
-				font-weight: 700;
+				font-weight: 800;
 				font-variant-numeric: tabular-nums;
 			}
 			.sep {
