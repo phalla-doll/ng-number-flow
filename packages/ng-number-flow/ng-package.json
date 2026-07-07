@@ -1,0 +1,6 @@
+{
+  "$schema": "https://raw.githubusercontent.com/angular/angular/main/packages/ng_packagr/ng-packagr/schema/ng-package.schema.json",
+  "lib": {
+    "entryFile": "src/public-api.ts"
+  }
+}

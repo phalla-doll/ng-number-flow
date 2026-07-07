@@ -1,0 +1,21 @@
+{
+  "name": "ng-number-flow-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Angular wrapper around the number-flow animated number component.",
+  "license": "MIT",
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r --parallel dev",
+    "typecheck": "pnpm -r typecheck",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.2"
+  },
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=18.19.0"
+  }
+}
