@@ -1,63 +1,56 @@
 {
-  "name": "ng-number-flow",
-  "version": "0.1.0",
-  "description": "An Angular (17+ standalone) animated number component. Wrapper around number-flow.",
-  "license": "MIT",
-  "author": "phalla-doll",
-  "homepage": "https://github.com/phalla-doll/ng-number-flow",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/phalla-doll/ng-number-flow",
-    "directory": "packages/ng-number-flow"
-  },
-  "bugs": {
-    "url": "https://github.com/phalla-doll/ng-number-flow/issues"
-  },
-  "keywords": [
-    "angular",
-    "ng",
-    "accessible",
-    "odometer",
-    "animation",
-    "number-format",
-    "number-animation",
-    "animated-number"
-  ],
-  "sideEffects": false,
-  "publishConfig": {
-    "access": "public"
-  },
-  "files": [
-    "dist",
-    "README.md"
-  ],
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.mjs"
-    },
-    "./package.json": "./package.json"
-  },
-  "scripts": {
-    "build": "ng-packagr -c tsconfig.lib.json",
-    "dev": "ng-packagr -c tsconfig.lib.json --watch",
-    "typecheck": "tsc -p tsconfig.lib.json --noEmit"
-  },
-  "peerDependencies": {
-    "@angular/core": ">=17.0.0",
-    "rxjs": ">=7.5.0"
-  },
-  "dependencies": {
-    "number-flow": "^0.6.1",
-    "tslib": "^2.7.0"
-  },
-  "devDependencies": {
-    "@angular/compiler": "^17.0.0",
-    "@angular/compiler-cli": "^17.0.0",
-    "@angular/core": "^17.0.0",
-    "ng-packagr": "^17.0.0",
-    "rxjs": "^7.8.0",
-    "typescript": "^5.6.2",
-    "zone.js": "^0.14.0"
-  }
+	"name": "ng-number-flow",
+	"version": "0.1.0",
+	"description": "An Angular (17+) standalone animated number component. A thin wrapper around number-flow.",
+	"license": "MIT",
+	"author": "phalla-doll",
+	"homepage": "https://github.com/phalla-doll/ng-number-flow",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/phalla-doll/ng-number-flow",
+		"directory": "packages/ng-number-flow"
+	},
+	"bugs": {
+		"url": "https://github.com/phalla-doll/ng-number-flow/issues"
+	},
+	"keywords": [
+		"angular",
+		"ng",
+		"accessible",
+		"odometer",
+		"animation",
+		"number-format",
+		"number-animation",
+		"animated-number"
+	],
+	"sideEffects": ["**/number-flow.element.ts"],
+	"publishConfig": {
+		"access": "public"
+	},
+	"files": [
+		"dist",
+		"README.md"
+	],
+	"scripts": {
+		"build": "ng-packagr -c tsconfig.lib.json",
+		"dev": "ng-packagr -c tsconfig.lib.json --watch",
+		"typecheck": "tsc -p tsconfig.lib.json --noEmit"
+	},
+	"peerDependencies": {
+		"@angular/core": ">=17.0.0"
+	},
+	"dependencies": {
+		"number-flow": "^0.6.1",
+		"tslib": "^2.7.0"
+	},
+	"devDependencies": {
+		"@angular/common": "^22.0.0",
+		"@angular/compiler": "^22.0.0",
+		"@angular/compiler-cli": "^22.0.0",
+		"@angular/core": "^22.0.0",
+		"ng-packagr": "^22.0.0",
+		"rxjs": "^7.8.0",
+		"typescript": "~6.0.0",
+		"zone.js": "^0.15.0"
+	}
 }

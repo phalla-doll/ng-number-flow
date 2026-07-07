@@ -1,8 +1,6 @@
 import type { Format, Value } from 'number-flow/lite';
 
-type FormatterKey = string;
-
-const cache = new Map<FormatterKey, Intl.NumberFormat>();
+const cache = new Map<string, Intl.NumberFormat>();
 
 export function getFormatter(
 	locales?: Intl.LocalesArgument,
@@ -17,8 +15,4 @@ export function getFormatter(
 	return formatter;
 }
 
-export function formatterKey(locales?: Intl.LocalesArgument, format?: Format): string {
-	return `${locales ? JSON.stringify(locales) : ''}:${format ? JSON.stringify(format) : ''}`;
-}
-
-export type { Value, Format };
+export type { Format, Value };

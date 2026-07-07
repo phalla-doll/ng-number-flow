@@ -1,52 +1,44 @@
-import {
-	ChangeDetectionStrategy,
-	Directive,
-	OnDestroy,
-	InjectionToken,
-	inject
-} from '@angular/core';
+import { Directive } from '@angular/core';
 import type NumberFlowLite from 'number-flow/lite';
-import { NUMBER_FLOW_GROUP } from './number-flow.tokens';
+import { NUMBER_FLOW_GROUP, type NumberFlowGroupCoordinator } from './number-flow.tokens';
 
-type RegisteredFlow = NumberFlowLite;
+class Coordinator implements NumberFlowGroupCoordinator {
+	private readonly flows = new Set<NumberFlowLite>();
+	private updating = false;
+	private endScheduled = false;
+
+	register(el: NumberFlowLite): () => void {
+		this.flows.add(el);
+		return () => {
+			this.flows.delete(el);
+		};
+	}
+
+	beginUpdate(): void {
+		if (this.updating) return;
+		this.updating = true;
+		this.flows.forEach((f) => {
+			if ((f as { created?: boolean }).created) f.willUpdate();
+		});
+	}
+
+	endUpdate(): void {
+		if (this.endScheduled) return;
+		this.endScheduled = true;
+		queueMicrotask(() => {
+			this.endScheduled = false;
+			if (!this.updating) return;
+			this.flows.forEach((f) => {
+				if ((f as { created?: boolean }).created) f.didUpdate();
+			});
+			this.updating = false;
+		});
+	}
+}
 
 @Directive({
 	selector: '[numberFlowGroup]',
 	standalone: true,
-	changeDetection: ChangeDetectionStrategy.OnPush,
-	providers: [
-		{
-			provide: NUMBER_FLOW_GROUP,
-			useFactory: () => {
-				const flows = new Set<RegisteredFlow>();
-				let updating = false;
-
-				const register = (el: NumberFlowLite) => {
-					flows.add(el);
-					return {
-						willUpdate: () => {
-							if (updating) return;
-							updating = true;
-							flows.forEach((f) => {
-								if ((f as any).created) (f as any).willUpdate();
-							});
-						},
-						didUpdate: () => {
-							flows.forEach((f) => {
-								if ((f as any).created) (f as any).didUpdate();
-							});
-							updating = false;
-						}
-					};
-				};
-
-				return register;
-			}
-		}
-	]
+	providers: [{ provide: NUMBER_FLOW_GROUP, useFactory: () => new Coordinator() }]
 })
-export class NumberFlowGroupDirective implements OnDestroy {
-	readonly token = inject(NUMBER_FLOW_GROUP);
-
-	ngOnDestroy(): void {}
-}
+export class NumberFlowGroupDirective {}

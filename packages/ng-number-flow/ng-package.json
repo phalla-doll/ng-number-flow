@@ -1,6 +1,7 @@
 {
-  "$schema": "https://raw.githubusercontent.com/angular/angular/main/packages/ng_packagr/ng-packagr/schema/ng-package.schema.json",
-  "lib": {
-    "entryFile": "src/public-api.ts"
-  }
+	"$schema": "https://raw.githubusercontent.com/angular/angular/main/packages/ng_packagr/ng-packagr/schema/ng-package.schema.json",
+	"allowedNonPeerDependencies": ["number-flow"],
+	"lib": {
+		"entryFile": "src/public-api.ts"
+	}
 }

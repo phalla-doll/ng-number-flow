@@ -204,6 +204,87 @@ added. Low risk.
 
 ---
 
+## 7. Implementation notes (as built)
+
+The library was implemented and verified end-to-end (demo app renders and animates in the
+browser). A few decisions diverged from the plan above; this section is the source of truth
+for what shipped.
+
+### 7.1 Wrapper component, not a direct custom-element component
+
+The plan proposed making the component's own selector the custom element (`number-flow-ng`).
+As built, the component uses selector **`number-flow`** and renders the custom element in its
+template:
+
+```ts
+@Component({
+  selector: 'number-flow',
+  standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `<number-flow-ng #flow></number-flow-ng>`,
+  host: { style: 'display: contents' },
+})
+```
+
+Why: a component selector and a registered custom-element name **cannot be the same string**
+without Angular/browser selector collisions. Wrapping (`<number-flow-ng>` inside) with the
+host set to `display: contents` mirrors the react/vue wrapper pattern and keeps the host
+transparent to layout. `@ViewChild('flow', { static: true })` makes the element available in
+`ngOnInit`.
+
+### 7.2 Classic decorator API, not signal inputs
+
+For broad **Angular 17.0+** compatibility the component uses classic `@Input()` / `@Output()`
+/ `ngOnChanges` / `ngOnInit` rather than signal `input()` (17.1+). The property-ordering
+invariant is enforced in `applyProps()` (all props) followed by `applyData()` (`el.data`
+last) — called from both `ngOnInit` and `ngOnChanges`.
+
+### 7.3 Default export gotcha (caused TS2614)
+
+`NumberFlowLite` is a **default** export from `number-flow/lite`. It must be imported as:
+
+```ts
+import NumberFlowLite, { formatToData, type Digits, type Format, type Trend, type Value } from 'number-flow/lite';
+import type { Plugin } from 'number-flow/plugins';
+```
+
+Not a named import (`import { NumberFlowLite }`) — that throws TS2614. `Plugin` lives in the
+`number-flow/plugins` subpath, not `/lite`.
+
+### 7.4 Group batching via DI
+
+`NUMBER_FLOW_GROUP` is an `InjectionToken` provided by the `[numberFlowGroup]` directive
+(`useFactory`). The coordinator exposes `register(el)` / `beginUpdate()` / `endUpdate()` and
+flushes with `queueMicrotask`. Each component injects the token `{ optional: true }`, sets
+`el.batched = !!group && !isolate`, and wraps `el.data =` in `beginUpdate()/endUpdate()` when
+grouped. `changeDetection` is **not** valid on `@Directive` metadata — only `@Component`.
+
+### 7.5 Events attached directly
+
+`animationsstart` / `animationsfinish` do **not** bubble, so they are bound with
+`addEventListener` on the inner element (in `attachListeners`) rather than via template event
+bindings on the host.
+
+### 7.6 Build & tooling realities
+
+- Built with **Angular 22** tooling on **Node 26**; source stays API-compatible with 17+.
+- The library builds via **ng-packagr** → `packages/ng-number-flow/dist` (fesm2022 + types).
+  `ng-package.json` lists `allowedNonPeerDependencies: ["number-flow"]`; `@angular/core` is a
+  peer dep `>=17`.
+- The demo app is **zoneless** (no zone.js; Angular 22 default) — signal/CD updates drive
+  rendering, confirming the wrapper works without zone.js.
+- The demo imports the library **from source** via a tsconfig `paths` mapping
+  (`ng-number-flow` → `../../packages/ng-number-flow/src/public-api.ts`) for live dev with no
+  rebuild. Because of this, `number-flow` must also be a **direct dependency of the demo app**
+  (not just the library) or Vite's dev server fails with
+  `Failed to resolve import "number-flow/lite"` — the production `ng build` resolves it through
+  the workspace, but the Vite dev optimizer needs it resolvable from the app.
+- Root `tsconfig.json` uses `"ignoreDeprecations": "6.0"` instead of `baseUrl` (TS 6.0
+  deprecates `baseUrl`).
+
+---
+
 ## Appendix A — Source references
 
 - Core custom element: `packages/number-flow/src/lite.ts`, `index.ts`

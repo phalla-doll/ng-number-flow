@@ -1,13 +1,12 @@
 import { InjectionToken } from '@angular/core';
 import type NumberFlowLite from 'number-flow/lite';
 
-export type RegisterWithGroup = (
-	el: NumberFlowLite
-) => {
-	willUpdate: () => void;
-	didUpdate: () => void;
-} | void;
+export interface NumberFlowGroupCoordinator {
+	register(el: NumberFlowLite): () => void;
+	beginUpdate(): void;
+	endUpdate(): void;
+}
 
-export const NUMBER_FLOW_GROUP = new InjectionToken<RegisterWithGroup | null>(
+export const NUMBER_FLOW_GROUP = new InjectionToken<NumberFlowGroupCoordinator | null>(
 	'NUMBER_FLOW_GROUP'
 );
