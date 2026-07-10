@@ -137,8 +137,13 @@
       <!-- Input -->
       <section class="example" id="input">
         <div class="example__head">
-          <h2>Input</h2>
-          <p>The classic counter. Every change animates the affected digits.</p>
+          <div class="example__intro">
+            <h2>Input</h2>
+            <p>The classic counter. Every change animates the affected digits.</p>
+          </div>
+          <ng-container
+            *ngTemplateOutlet="codeBtn; context: { id: 'input', label: 'Input' }"
+          />
         </div>
         <div class="card">
           <div class="stepper">
@@ -156,8 +161,13 @@
       <!-- Activity -->
       <section class="example" id="activity">
         <div class="example__head">
-          <h2>Activity</h2>
-          <p>A live metric with a trend badge — updates on its own every 1.6s.</p>
+          <div class="example__intro">
+            <h2>Activity</h2>
+            <p>A live metric with a trend badge — updates on its own every 1.6s.</p>
+          </div>
+          <ng-container
+            *ngTemplateOutlet="codeBtn; context: { id: 'activity', label: 'Activity' }"
+          />
         </div>
         <div class="card">
           <div class="stat">
@@ -182,8 +192,13 @@
       <!-- Currency -->
       <section class="example" id="currency">
         <div class="example__head">
-          <h2>Currency</h2>
-          <p>Locale currency formatting via <code>[format]</code>, with prefix and suffix.</p>
+          <div class="example__intro">
+            <h2>Currency</h2>
+            <p>Locale currency formatting via <code>[format]</code>, with prefix and suffix.</p>
+          </div>
+          <ng-container
+            *ngTemplateOutlet="codeBtn; context: { id: 'currency', label: 'Currency' }"
+          />
         </div>
         <div class="card">
           <div class="stat stat--center">
@@ -205,8 +220,13 @@
       <!-- Countdown -->
       <section class="example" id="countdown">
         <div class="example__head">
-          <h2>Countdown</h2>
-          <p>A downward trend loops from 90 to 0. Digits spin in the falling direction.</p>
+          <div class="example__intro">
+            <h2>Countdown</h2>
+            <p>A downward trend loops from 90 to 0. Digits spin in the falling direction.</p>
+          </div>
+          <ng-container
+            *ngTemplateOutlet="codeBtn; context: { id: 'countdown', label: 'Countdown' }"
+          />
         </div>
         <div class="card">
           <div class="stat stat--center">
@@ -219,11 +239,16 @@
       <!-- Scoreboard -->
       <section class="example" id="scoreboard">
         <div class="example__head">
-          <h2>Scoreboard</h2>
-          <p>
-            Two values inside <code>numberFlowGroup</code> — batched so both animate on the same
-            frame.
-          </p>
+          <div class="example__intro">
+            <h2>Scoreboard</h2>
+            <p>
+              Two values inside <code>numberFlowGroup</code> — batched so both animate on the same
+              frame.
+            </p>
+          </div>
+          <ng-container
+            *ngTemplateOutlet="codeBtn; context: { id: 'scoreboard', label: 'Scoreboard' }"
+          />
         </div>
         <div class="card">
           <div class="scoreboard">
@@ -257,3 +282,45 @@
     >
   </footer>
 </div>
+
+<!-- Reusable "See the code" button, rendered in each example's header. -->
+<ng-template #codeBtn let-id="id" let-label="label">
+  <button
+    type="button"
+    class="code-btn"
+    (click)="showCode(id)"
+    [attr.aria-label]="'View source for ' + label"
+  >
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />
+    </svg>
+    Code
+  </button>
+</ng-template>
+
+<!-- Source dialog. Native <dialog> gives focus-trapping + Escape-to-close. -->
+<dialog #codeDialog class="code-dialog" (close)="onDialogClose()" (click)="onDialogClick($event)">
+  @if (openCode(); as ex) {
+    <div class="code-dialog__head">
+      <h3>{{ ex.label }}</h3>
+      <div class="code-dialog__actions">
+        <button type="button" class="code-dialog__copy" (click)="copyCode(ex.code)">
+          {{ copied() ? 'Copied' : 'Copy' }}
+        </button>
+        <button type="button" class="code-dialog__close" (click)="closeCode()" aria-label="Close">
+          ✕
+        </button>
+      </div>
+    </div>
+    <pre class="code-dialog__body"><code [innerHTML]="ex.html"></code></pre>
+  }
+</dialog>

@@ -3,9 +3,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  ElementRef,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { NumberFlowComponent, NumberFlowGroupDirective } from 'ng-number-flow';
 
 interface ExampleLink {
@@ -13,11 +16,19 @@ interface ExampleLink {
   readonly label: string;
 }
 
+interface OpenCode {
+  readonly label: string;
+  /** Raw source, used for the copy button. */
+  readonly code: string;
+  /** Syntax-highlighted HTML, bound into the dialog body. */
+  readonly html: string;
+}
+
 @Component({
   selector: 'app-root',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NumberFlowComponent, NumberFlowGroupDirective],
+  imports: [NgTemplateOutlet, NumberFlowComponent, NumberFlowGroupDirective],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
@@ -34,6 +45,72 @@ export class App {
 
   /** Which section is currently in view — drives the sidebar highlight. */
   protected readonly activeId = signal<string>(this.examples[0].id);
+
+  /** The `<dialog>` that shows an example's source. */
+  private readonly codeDialog = viewChild.required<ElementRef<HTMLDialogElement>>('codeDialog');
+
+  /** The example whose wire-up is currently shown, or `null` when closed. */
+  protected readonly openCode = signal<OpenCode | null>(null);
+
+  /** Brief "Copied" state for the dialog's copy button. */
+  protected readonly copied = signal(false);
+
+  /** Wire-up snippet for each example, keyed by section id. */
+  private readonly source: Record<string, string> = {
+    input: `// component
+count = signal(0);
+
+// template
+<button (click)="count.set(count() - 1)">−</button>
+<number-flow [value]="count()" />
+<button (click)="count.set(count() + 1)">+</button>`,
+    activity: `// component
+activeUsers = signal(1284);
+usersDelta = signal(0);
+
+setInterval(() => {
+  const step = Math.floor(Math.random() * 61) - 24;
+  usersDelta.set(step);
+  activeUsers.update((v) => Math.max(0, v + step));
+}, 1600);
+
+// template
+<number-flow [value]="activeUsers()" />
+<number-flow
+  [value]="usersDelta()"
+  [format]="{ signDisplay: 'never' }"
+  suffix=" in the last tick" />`,
+    currency: `// component
+balance = signal(1499.99);
+addFunds() { balance.update((v) => +(v + 19.99).toFixed(2)); }
+refund()   { balance.update((v) => +Math.max(0, v - 49.5).toFixed(2)); }
+
+// template
+<number-flow
+  [value]="balance()"
+  prefix="$"
+  suffix=" USD"
+  [format]="{ minimumFractionDigits: 2, maximumFractionDigits: 2 }" />`,
+    countdown: `// component
+countdown = signal(90);
+
+setInterval(() => {
+  countdown.update((v) => (v <= 0 ? 90 : v - 1));
+}, 1600);
+
+// template
+<number-flow [value]="countdown()" suffix="s" />`,
+    scoreboard: `// component
+home = signal(2);
+away = signal(1);
+
+// template — numberFlowGroup batches both onto the same frame
+<div numberFlowGroup>
+  <number-flow [value]="home()" />
+  <span class="sep">:</span>
+  <number-flow [value]="away()" />
+</div>`,
+  };
 
   // Input — a plain, user-driven counter.
   protected readonly count = signal(0);
@@ -89,6 +166,83 @@ export class App {
   protected resetScore(): void {
     this.home.set(0);
     this.away.set(0);
+  }
+
+  /** Open the source dialog for the example with the given id. */
+  protected showCode(id: string): void {
+    const example = this.examples.find((e) => e.id === id);
+    const code = this.source[id];
+    if (!example || !code) return;
+    this.copied.set(false);
+    this.openCode.set({ label: example.label, code, html: this.highlight(code) });
+    this.codeDialog().nativeElement.showModal();
+  }
+
+  protected closeCode(): void {
+    this.codeDialog().nativeElement.close();
+  }
+
+  /** Native `<dialog>` close (button, Escape, or backdrop) — clear the state. */
+  protected onDialogClose(): void {
+    this.openCode.set(null);
+    this.copied.set(false);
+  }
+
+  /** Close when the click lands on the backdrop rather than the dialog card. */
+  protected onDialogClick(event: MouseEvent): void {
+    if (event.target === this.codeDialog().nativeElement) this.closeCode();
+  }
+
+  protected async copyCode(code: string): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(code);
+      this.copied.set(true);
+      setTimeout(() => this.copied.set(false), 1500);
+    } catch {
+      // Clipboard unavailable (e.g. insecure context) — ignore.
+    }
+  }
+
+  /**
+   * Tiny tokenizer that wraps the snippet in colored `<span>`s. Purpose-built
+   * for these mixed TS + Angular-template samples — not a general highlighter.
+   * Scans left-to-right so tokens never overlap, and escapes every emitted
+   * character (the wrapped output is bound with `[innerHTML]`).
+   */
+  private highlight(code: string): string {
+    const escape = (s: string): string =>
+      s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    // Sticky patterns, tried in priority order at each cursor position.
+    const patterns: readonly [string, RegExp][] = [
+      ['tok-comment', /\/\/[^\n]*/y],
+      ['tok-string', /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/y],
+      ['tok-tag', /<\/?[a-zA-Z][\w-]*|\/?>/y],
+      ['tok-attr', /\[[a-zA-Z][\w.-]*\]|\([a-zA-Z][\w.-]*\)/y],
+      ['tok-number', /\b\d+(?:\.\d+)?\b/y],
+      ['tok-keyword', /\b(?:const|let|signal|update|set|new|return|Math)\b/y],
+    ];
+
+    let out = '';
+    let i = 0;
+    while (i < code.length) {
+      let matched = false;
+      for (const [cls, re] of patterns) {
+        re.lastIndex = i;
+        const m = re.exec(code);
+        if (m) {
+          out += `<span class="${cls}">${escape(m[0])}</span>`;
+          i += m[0].length;
+          matched = true;
+          break;
+        }
+      }
+      if (!matched) {
+        out += escape(code[i]);
+        i++;
+      }
+    }
+    return out;
   }
 
   private startLiveTicker(): void {

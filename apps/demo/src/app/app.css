@@ -12,6 +12,14 @@
   --shadow: 0 1px 2px rgba(9, 9, 11, 0.04), 0 8px 24px rgba(9, 9, 11, 0.04);
   --radius: 16px;
 
+  /* Syntax highlighting (light) */
+  --tok-comment: #6e7781;
+  --tok-string: #0a3069;
+  --tok-number: #0550ae;
+  --tok-keyword: #cf222e;
+  --tok-tag: #116329;
+  --tok-attr: #8250df;
+
   display: block;
   min-height: 100dvh;
   background: var(--bg);
@@ -35,6 +43,14 @@
     --border-strong: #333338;
     --accent: #fafafa;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+
+    /* Syntax highlighting (dark) */
+    --tok-comment: #8b949e;
+    --tok-string: #a5d6ff;
+    --tok-number: #79c0ff;
+    --tok-keyword: #ff7b72;
+    --tok-tag: #7ee787;
+    --tok-attr: #d2a8ff;
   }
 }
 
@@ -237,6 +253,15 @@
   scroll-margin-top: 32px;
 }
 
+.example__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.example__intro {
+  min-width: 0;
+}
 .example__head h2 {
   margin: 0;
   font-size: 21px;
@@ -249,6 +274,168 @@
   line-height: 1.5;
   color: var(--muted);
   max-width: 52ch;
+}
+
+.code-btn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 1px;
+  padding: 5px 9px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--faint);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+.code-btn:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--muted) 8%, transparent);
+}
+.code-btn:active {
+  transform: translateY(1px);
+}
+.code-btn svg {
+  width: 15px;
+  height: 15px;
+  opacity: 0.9;
+}
+
+/* ---------- Source dialog ---------- */
+.code-dialog {
+  width: min(640px, calc(100vw - 32px));
+  max-height: min(80vh, 640px);
+  margin: auto;
+  padding: 0;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 16px 56px rgba(9, 9, 11, 0.24);
+  overflow: hidden;
+  /* Entrance animation; degrades to instant where allow-discrete is unsupported. */
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    overlay 0.2s ease allow-discrete,
+    display 0.2s ease allow-discrete;
+}
+.code-dialog[open] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+@starting-style {
+  .code-dialog[open] {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+.code-dialog::backdrop {
+  background: rgba(9, 9, 11, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.code-dialog__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.code-dialog__head h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.code-dialog__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.code-dialog__copy {
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 6px 12px;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+.code-dialog__copy:hover {
+  color: var(--text);
+  border-color: var(--faint);
+}
+.code-dialog__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+.code-dialog__close:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--muted) 10%, transparent);
+}
+.code-dialog__body {
+  margin: 0;
+  padding: 20px;
+  overflow: auto;
+  font-family: 'SFMono-Regular', ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--text);
+  tab-size: 2;
+}
+.code-dialog__body code {
+  font: inherit;
+}
+/* Injected via [innerHTML], so the spans lack this component's encapsulation
+   attribute — pierce it with ::ng-deep, kept scoped under the dialog body. */
+.code-dialog__body ::ng-deep .tok-comment {
+  color: var(--tok-comment);
+  font-style: italic;
+}
+.code-dialog__body ::ng-deep .tok-string {
+  color: var(--tok-string);
+}
+.code-dialog__body ::ng-deep .tok-number {
+  color: var(--tok-number);
+}
+.code-dialog__body ::ng-deep .tok-keyword {
+  color: var(--tok-keyword);
+}
+.code-dialog__body ::ng-deep .tok-tag {
+  color: var(--tok-tag);
+}
+.code-dialog__body ::ng-deep .tok-attr {
+  color: var(--tok-attr);
 }
 
 .card {
