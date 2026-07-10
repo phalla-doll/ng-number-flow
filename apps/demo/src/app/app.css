@@ -278,6 +278,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  font-family: inherit;
   font-size: 22px;
   line-height: 1;
   color: var(--text);
@@ -407,6 +408,7 @@
 }
 .pill {
   padding: 9px 16px;
+  font-family: inherit;
   font-size: 14px;
   font-weight: 600;
   color: var(--surface);
