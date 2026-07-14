@@ -31,9 +31,19 @@ interface OpenCode {
   imports: [NgTemplateOutlet, NumberFlowComponent, NumberFlowGroupDirective],
   templateUrl: './app.html',
   styleUrl: './app.css',
+  host: { '[attr.data-theme]': 'theme()' },
 })
 export class App {
   private readonly destroyRef = inject(DestroyRef);
+
+  /**
+   * Explicit light/dark override. `null` means "follow the OS" — the attribute
+   * is then absent, so the `prefers-color-scheme` media queries govern. Resolved
+   * from localStorage (or the OS) after first render, in `afterNextRender`.
+   */
+  protected readonly theme = signal<'light' | 'dark' | null>(null);
+
+  private static readonly THEME_KEY = 'ng-number-flow-theme';
 
   protected readonly examples: readonly ExampleLink[] = [
     { id: 'input', label: 'Input' },
@@ -134,9 +144,34 @@ away = signal(1);
     // `afterNextRender` (client-only, zoneless-safe) and tear them down via
     // `DestroyRef` — no `ngOnInit`/`ngOnDestroy` needed.
     afterNextRender(() => {
+      this.restoreTheme();
       this.startLiveTicker();
       this.observeSections();
     });
+  }
+
+  /** Load the saved theme, or fall back to the OS preference. Client-only. */
+  private restoreTheme(): void {
+    const saved = localStorage.getItem(App.THEME_KEY);
+    if (saved === 'light' || saved === 'dark') {
+      this.applyTheme(saved);
+      return;
+    }
+    const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
+    this.applyTheme(prefersDark ? 'dark' : 'light');
+  }
+
+  /** Flip between light and dark, persisting the choice. */
+  protected toggleTheme(): void {
+    this.applyTheme(this.theme() === 'dark' ? 'light' : 'dark');
+  }
+
+  private applyTheme(next: 'light' | 'dark'): void {
+    this.theme.set(next);
+    localStorage.setItem(App.THEME_KEY, next);
+    // Mirror onto <html> so the global body/overscroll background (styles.css)
+    // tracks the override too, not just the OS preference.
+    document.documentElement.dataset['theme'] = next;
   }
 
   protected inc(): void {
