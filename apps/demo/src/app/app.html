@@ -269,30 +269,6 @@
         </div>
       </section>
 
-      <!-- Input -->
-      <section class="example" id="input">
-        <div class="example__head">
-          <div class="example__intro">
-            <h2>Input</h2>
-            <p>The classic counter. Every change animates the affected digits.</p>
-          </div>
-          <ng-container
-            *ngTemplateOutlet="codeBtn; context: { id: 'input', label: 'Input' }"
-          />
-        </div>
-        <div class="card">
-          <div class="stepper">
-            <button type="button" class="stepper__btn" (click)="dec()" aria-label="Decrease">
-              &minus;
-            </button>
-            <number-flow class="stepper__value" [value]="count()" />
-            <button type="button" class="stepper__btn" (click)="inc()" aria-label="Increase">
-              +
-            </button>
-          </div>
-        </div>
-      </section>
-
       <!-- Activity -->
       <section class="example" id="activity">
         <div class="example__head">
@@ -403,6 +379,28 @@
               <button type="button" class="pill" (click)="scoreAway()">Away +1</button>
               <button type="button" class="pill pill--muted" (click)="resetScore()">Reset</button>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Input -->
+      <section class="example" id="input">
+        <div class="example__head">
+          <div class="example__intro">
+            <h2>Input</h2>
+            <p>The classic counter. Every change animates the affected digits.</p>
+          </div>
+          <ng-container *ngTemplateOutlet="codeBtn; context: { id: 'input', label: 'Input' }" />
+        </div>
+        <div class="card">
+          <div class="stepper">
+            <button type="button" class="stepper__btn" (click)="dec()" aria-label="Decrease">
+              &minus;
+            </button>
+            <number-flow class="stepper__value" [value]="count()" />
+            <button type="button" class="stepper__btn" (click)="inc()" aria-label="Increase">
+              +
+            </button>
           </div>
         </div>
       </section>

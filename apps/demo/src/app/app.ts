@@ -47,11 +47,11 @@ export class App {
 
   protected readonly examples: readonly ExampleLink[] = [
     { id: 'dashboard', label: 'Dashboard' },
-    { id: 'input', label: 'Input' },
     { id: 'activity', label: 'Activity' },
     { id: 'currency', label: 'Currency' },
     { id: 'countdown', label: 'Countdown' },
     { id: 'scoreboard', label: 'Scoreboard' },
+    { id: 'input', label: 'Input' },
   ];
 
   /** Which section is currently in view — drives the sidebar highlight. */
