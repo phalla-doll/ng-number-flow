@@ -1,5 +1,18 @@
 /* You can add global styles to this file, and also import other style files */
 
+html,
+body {
+  margin: 0;
+  background: #fcfcfc;
+}
+
+@media (prefers-color-scheme: dark) {
+  html,
+  body {
+    background: #09090b;
+  }
+}
+
 /* Sunghyun Sans — self-hosted (SIL OFL 1.1). https://github.com/anaclumos/sunghyun-sans */
 @font-face {
   font-family: 'Sunghyun Sans';
