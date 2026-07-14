@@ -597,6 +597,57 @@
   font-size: 13px;
 }
 
+/* ---------- Dashboard (KPIs) ---------- */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+.kpi {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--muted) 4%, transparent);
+}
+.kpi__label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+}
+.kpi__value {
+  font-size: clamp(28px, 4.4vw, 38px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.kpi__delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.kpi__delta--up {
+  color: var(--up);
+  background: color-mix(in srgb, var(--up) 12%, transparent);
+}
+.kpi__delta--down {
+  color: var(--down);
+  background: color-mix(in srgb, var(--down) 12%, transparent);
+}
+.kpi__arrow {
+  font-size: 12px;
+}
+
 /* ---------- Scoreboard ---------- */
 .scoreboard {
   display: flex;
@@ -733,5 +784,8 @@
   .card {
     min-height: 220px;
     padding: 32px 16px;
+  }
+  .kpis {
+    grid-template-columns: 1fr;
   }
 }

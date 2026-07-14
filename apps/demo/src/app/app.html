@@ -172,6 +172,103 @@
     </nav>
 
     <div class="examples">
+      <!-- Dashboard -->
+      <section class="example" id="dashboard">
+        <div class="example__head">
+          <div class="example__intro">
+            <h2>Dashboard</h2>
+            <p>
+              The bread-and-butter use: live KPIs that re-animate as data streams in. Three formats —
+              currency, compact, and percent — batched with <code>numberFlowGroup</code> so they move
+              on the same frame.
+            </p>
+          </div>
+          <ng-container
+            *ngTemplateOutlet="codeBtn; context: { id: 'dashboard', label: 'Dashboard' }"
+          />
+        </div>
+        <div class="card">
+          <div class="kpis" numberFlowGroup>
+            <div class="kpi">
+              <span class="kpi__label">Revenue</span>
+              <number-flow
+                class="kpi__value"
+                [value]="dashRevenue()"
+                [format]="{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }"
+              />
+              <span
+                class="kpi__delta"
+                [class.kpi__delta--up]="dashRevenueDelta() >= 0"
+                [class.kpi__delta--down]="dashRevenueDelta() < 0"
+              >
+                <span class="kpi__arrow" aria-hidden="true">{{
+                  dashRevenueDelta() >= 0 ? '↑' : '↓'
+                }}</span>
+                <number-flow
+                  [value]="dashRevenueDelta()"
+                  [format]="{
+                    style: 'percent',
+                    signDisplay: 'never',
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 1,
+                  }"
+                />
+              </span>
+            </div>
+
+            <div class="kpi">
+              <span class="kpi__label">Active users</span>
+              <number-flow
+                class="kpi__value"
+                [value]="dashUsers()"
+                [format]="{ notation: 'compact', maximumFractionDigits: 1 }"
+              />
+              <span
+                class="kpi__delta"
+                [class.kpi__delta--up]="dashUsersDelta() >= 0"
+                [class.kpi__delta--down]="dashUsersDelta() < 0"
+              >
+                <span class="kpi__arrow" aria-hidden="true">{{
+                  dashUsersDelta() >= 0 ? '↑' : '↓'
+                }}</span>
+                <number-flow [value]="dashUsersDelta()" [format]="{ signDisplay: 'never' }" />
+              </span>
+            </div>
+
+            <div class="kpi">
+              <span class="kpi__label">Conversion</span>
+              <number-flow
+                class="kpi__value"
+                [value]="dashConversion()"
+                [format]="{
+                  style: 'percent',
+                  minimumFractionDigits: 1,
+                  maximumFractionDigits: 1,
+                }"
+              />
+              <span
+                class="kpi__delta"
+                [class.kpi__delta--up]="dashConversionDelta() >= 0"
+                [class.kpi__delta--down]="dashConversionDelta() < 0"
+              >
+                <span class="kpi__arrow" aria-hidden="true">{{
+                  dashConversionDelta() >= 0 ? '↑' : '↓'
+                }}</span>
+                <number-flow
+                  [value]="dashConversionDelta()"
+                  [format]="{
+                    style: 'percent',
+                    signDisplay: 'never',
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 1,
+                  }"
+                />
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- Input -->
       <section class="example" id="input">
         <div class="example__head">

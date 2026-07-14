@@ -46,6 +46,7 @@ export class App {
   private static readonly THEME_KEY = 'ng-number-flow-theme';
 
   protected readonly examples: readonly ExampleLink[] = [
+    { id: 'dashboard', label: 'Dashboard' },
     { id: 'input', label: 'Input' },
     { id: 'activity', label: 'Activity' },
     { id: 'currency', label: 'Currency' },
@@ -67,6 +68,23 @@ export class App {
 
   /** Wire-up snippet for each example, keyed by section id. */
   private readonly source: Record<string, string> = {
+    dashboard: `// component
+revenue = signal(48290);
+users = signal(12400);
+conversion = signal(0.038);
+
+// template — one group, three formats, all on the same frame
+<div numberFlowGroup>
+  <number-flow
+    [value]="revenue()"
+    [format]="{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }" />
+  <number-flow
+    [value]="users()"
+    [format]="{ notation: 'compact', maximumFractionDigits: 1 }" />
+  <number-flow
+    [value]="conversion()"
+    [format]="{ style: 'percent', minimumFractionDigits: 1 }" />
+</div>`,
     input: `// component
 count = signal(0);
 
@@ -121,6 +139,16 @@ away = signal(1);
   <number-flow [value]="away()" />
 </div>`,
   };
+
+  // Dashboard — live KPIs that random-walk every tick. Values feed different
+  // Intl formats (currency / compact / percent); deltas are stored as
+  // fractions so the percent formatter renders them directly.
+  protected readonly dashRevenue = signal(48290);
+  protected readonly dashRevenueDelta = signal(0.042);
+  protected readonly dashUsers = signal(12400);
+  protected readonly dashUsersDelta = signal(312);
+  protected readonly dashConversion = signal(0.038);
+  protected readonly dashConversionDelta = signal(-0.003);
 
   // Input — a plain, user-driven counter.
   protected readonly count = signal(0);
@@ -286,8 +314,25 @@ away = signal(1);
       this.usersDelta.set(step);
       this.activeUsers.update((v) => Math.max(0, v + step));
       this.countdown.update((v) => (v <= 0 ? 90 : v - 1));
+      this.tickDashboard();
     }, 1600);
     this.destroyRef.onDestroy(() => clearInterval(id));
+  }
+
+  /** Random-walk each KPI and record the change as this tick's delta. */
+  private tickDashboard(): void {
+    const rev = this.dashRevenue();
+    const revStep = Math.floor(Math.random() * 3400) - 1200;
+    this.dashRevenue.set(Math.max(0, rev + revStep));
+    this.dashRevenueDelta.set(rev ? revStep / rev : 0);
+
+    const usrStep = Math.floor(Math.random() * 900) - 340;
+    this.dashUsersDelta.set(usrStep);
+    this.dashUsers.update((v) => Math.max(0, v + usrStep));
+
+    const convStep = Math.random() * 0.008 - 0.0035;
+    this.dashConversionDelta.set(convStep);
+    this.dashConversion.update((v) => Math.max(0, v + convStep));
   }
 
   private observeSections(): void {
