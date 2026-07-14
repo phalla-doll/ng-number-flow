@@ -341,13 +341,10 @@
   flex: none;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 1px;
-  padding: 5px 9px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
   color: var(--faint);
   background: transparent;
   border: none;
@@ -365,8 +362,8 @@
   transform: translateY(1px);
 }
 .code-btn svg {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   opacity: 0.9;
 }
 
