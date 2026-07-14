@@ -32,8 +32,14 @@
   font-variant-numeric: tabular-nums;
 }
 
+/*
+ * Dark tokens. Applied when the OS prefers dark AND the user hasn't forced
+ * light, or when the user has explicitly chosen dark via the toggle. Light is
+ * the `:host` default above, so an explicit `[data-theme='light']` needs no
+ * rule — it simply keeps the defaults and wins over the media query below.
+ */
 @media (prefers-color-scheme: dark) {
-  :host {
+  :host:not([data-theme='light']) {
     --bg: #09090b;
     --surface: #131316;
     --text: #fafafa;
@@ -54,6 +60,26 @@
   }
 }
 
+:host([data-theme='dark']) {
+  --bg: #09090b;
+  --surface: #131316;
+  --text: #fafafa;
+  --muted: #a1a1aa;
+  --faint: #71717a;
+  --border: #26262b;
+  --border-strong: #333338;
+  --accent: #fafafa;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+
+  /* Syntax highlighting (dark) */
+  --tok-comment: #8b949e;
+  --tok-string: #a5d6ff;
+  --tok-number: #79c0ff;
+  --tok-keyword: #ff7b72;
+  --tok-tag: #7ee787;
+  --tok-attr: #d2a8ff;
+}
+
 *,
 *::before,
 *::after {
@@ -65,6 +91,41 @@
   max-width: 1080px;
   margin: 0 auto;
   padding: 0 24px 96px;
+}
+
+/* ---------- Theme toggle ---------- */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  backdrop-filter: blur(8px);
+  color: var(--muted);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.theme-toggle:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* ---------- Hero ---------- */

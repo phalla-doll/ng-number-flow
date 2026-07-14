@@ -3,14 +3,23 @@
 html,
 body {
   margin: 0;
+}
+
+/* Root background fills the overscroll/rubber-band area behind <app-root>.
+   `data-theme` on <html> is the user's explicit override (set by the demo);
+   without it the OS preference governs, matching the in-app tokens. */
+html {
   background: #fcfcfc;
 }
 
 @media (prefers-color-scheme: dark) {
-  html,
-  body {
+  html:not([data-theme='light']) {
     background: #09090b;
   }
+}
+
+html[data-theme='dark'] {
+  background: #09090b;
 }
 
 /* Sunghyun Sans — self-hosted (SIL OFL 1.1). https://github.com/anaclumos/sunghyun-sans */
