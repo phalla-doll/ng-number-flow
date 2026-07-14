@@ -6,10 +6,12 @@ A step-by-step plan for releasing the library to the public npm registry. The pa
 the generated `package.json` with the correct `exports`, `module`, and `typings` fields plus the
 copied `README.md`.
 
-> Status: **published** — <https://www.npmjs.com/package/ng-number-flow> (`0.1.0`, `latest`).
-> The package was released via [`.github/workflows/publish.yml`](../.github/workflows/publish.yml)
-> with provenance (see §7). Partial compilation mode is set and the FESM bundle + types ship
-> correctly (verified with `npm publish --dry-run` and a smoke-test install).
+> Status: **published** — <https://www.npmjs.com/package/ng-number-flow> (`0.2.0`, `latest`).
+> Releases run via [`.github/workflows/publish.yml`](../.github/workflows/publish.yml) with
+> provenance (see §7) on every `v*` tag push. Partial compilation mode is set and the FESM
+> bundle + types ship correctly (verified with `npm publish --dry-run` and a smoke-test install).
+> `0.2.0` ships the signals-API migration of `NumberFlowComponent` (internal refactor, public
+> API unchanged); `0.1.0` was the initial release.
 
 ---
 
@@ -50,9 +52,9 @@ Follow semver. Bump the version in `packages/ng-number-flow/package.json` **befo
 
 ```bash
 # from packages/ng-number-flow
-npm version patch   # 0.1.0 -> 0.1.1   (bug fixes)
-npm version minor   # 0.1.0 -> 0.2.0   (new features, backward compatible)
-npm version major   # 0.1.0 -> 1.0.0   (breaking changes)
+npm version patch   # 0.2.0 -> 0.2.1   (bug fixes)
+npm version minor   # 0.2.0 -> 0.3.0   (new features, backward compatible)
+npm version major   # 0.2.0 -> 1.0.0   (breaking changes)
 ```
 
 `npm version` also creates a git commit + tag by default. If you prefer to manage tags manually

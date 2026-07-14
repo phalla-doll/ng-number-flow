@@ -126,7 +126,10 @@ Build via **ng-packagr** (Angular Package Format), the standard Angular consumer
 - **Outputs:** `animationsStart`, `animationsFinish`.
 - Internally computes `data` via a `computed()` over the inputs + `formatToData`.
 - `ChangeDetectionStrategy.OnPush`.
-- Injects `ElementRef`, `NgZone`, `PLATFORM_ID`, and optionally `NUMBER_FLOW_GROUP`.
+- Reads the custom element via `viewChild.required()`, injects `DestroyRef`, and optionally
+  `NUMBER_FLOW_GROUP`. SSR safety comes from the `afterNextRender`/`afterRenderEffect` hooks
+  rather than a `PLATFORM_ID` check; no `NgZone` (the component is zoneless). (As built — the
+  original plan injected `ElementRef`/`NgZone`/`PLATFORM_ID`; see §7.2.)
 
 > **Property-ordering strategy.** In `ngOnChanges` / an `effect()`, set every element
 > property first, then set `el.data = data` **last**. Angular gives us clean control over

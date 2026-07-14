@@ -1,6 +1,6 @@
 {
 	"name": "ng-number-flow",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "An Angular (19+) standalone animated number component. A thin wrapper around number-flow.",
 	"license": "MIT",
 	"author": "phalla-doll",
