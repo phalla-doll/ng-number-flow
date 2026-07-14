@@ -598,21 +598,22 @@
 }
 
 /* ---------- Dashboard (KPIs) ---------- */
+/* No inner cards — the three metrics share the outer card and are separated
+   by hairline dividers, keeping the section light and uncluttered. */
 .kpis {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
   width: 100%;
 }
 .kpi {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 12px;
-  padding: 20px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--muted) 4%, transparent);
+  gap: 14px;
+  padding: 0 28px;
+}
+.kpi + .kpi {
+  border-left: 1px solid var(--border);
 }
 .kpi__label {
   font-size: 12px;
@@ -633,16 +634,12 @@
   gap: 5px;
   font-size: 13px;
   font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 999px;
 }
 .kpi__delta--up {
   color: var(--up);
-  background: color-mix(in srgb, var(--up) 12%, transparent);
 }
 .kpi__delta--down {
   color: var(--down);
-  background: color-mix(in srgb, var(--down) 12%, transparent);
 }
 .kpi__arrow {
   font-size: 12px;
@@ -787,5 +784,14 @@
   }
   .kpis {
     grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .kpi {
+    padding: 0;
+  }
+  .kpi + .kpi {
+    border-left: none;
+    border-top: 1px solid var(--border);
+    padding-top: 28px;
   }
 }
